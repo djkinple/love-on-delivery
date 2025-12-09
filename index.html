@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>破壞之王 - 古拳法大挑戰</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        :root {
+            --primary-yellow: #f1c40f; 
+            --accent-red: #c0392b;
+            --dark-blue: #2c3e50;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --ig-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+
+        body {
+            margin: 0;
+            /* 背景設定：海報圖 + 深色遮罩 */
+            background-image: 
+                linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)),
+                url('delivery.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            font-family: 'Noto Sans TC', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--black);
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--white);
+            border: 6px solid var(--black);
+            border-radius: 15px;
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.4);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+            z-index: 10;
+        }
+
+        /* 圖片區 */
+        .poster-area {
+            width: 100%;
+            height: 260px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 5px solid var(--black);
+            background: #000;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+        }
+
+        .poster-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s;
+        }
+
+        .poster-area:hover img {
+            transform: scale(1.1);
+        }
+
+        h1 {
+            margin: 5px 0 15px 0;
+            color: var(--accent-red);
+            font-weight: 900;
+            font-size: 2rem;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px var(--primary-yellow), 5px 5px 0px var(--black);
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        p { line-height: 1.6; font-weight: 700; font-size: 1.1rem; margin: 10px 0; }
+
+        /* 按鈕樣式 */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: 900;
+            cursor: pointer;
+            color: var(--white);
+            background: var(--accent-red);
+            box-shadow: 6px 6px 0px var(--black);
+            margin-top: 20px;
+            transition: all 0.1s;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px var(--black); filter: brightness(1.1); }
+        .btn:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--black); }
+        .btn:disabled { background: #95a5a6; cursor: not-allowed; box-shadow: none; transform: translate(4px, 4px); }
+
+        .btn-ig {
+            background: var(--ig-gradient);
+            border-color: var(--black);
+        }
+
+        /* 題目區 */
+        .progress-container {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 15px; font-weight: 900; color: #7f8c8d;
+        }
+        .progress-bar { 
+            flex-grow: 1; height: 12px; background: #eee; 
+            border-radius: 6px; overflow: hidden; margin: 0 10px; 
+            border: 2px solid var(--black);
+        }
+        .progress-fill { height: 100%; background: var(--primary-yellow); width: 0%; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .question-box {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px solid var(--black);
+            min-height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 900; line-height: 1.4;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .question-box::after {
+            content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            border-width: 15px 15px 0; border-style: solid; border-color: var(--black) transparent transparent transparent;
+        }
+        .question-box::before {
+            content: ''; position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%);
+            border-width: 12px 12px 0; border-style: solid; border-color: #ecf0f1 transparent transparent transparent; z-index: 1;
+        }
+
+        .btn-option {
+            background: var(--white); color: var(--black);
+            text-align: left; margin-bottom: 12px;
+            box-shadow: 4px 4px 0px #bdc3c7;
+            border-color: var(--black);
+        }
+        .btn-option:hover:not(:disabled) { background: #fff5cc; transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #bdc3c7; }
+        .btn-option:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #bdc3c7; }
+
+        .btn-option.correct { 
+            background: #2ecc71 !important; color: white; border-color: #27ae60; 
+            box-shadow: none; transform: scale(1.02);
+        }
+        .btn-option.wrong { 
+            background: #e74c3c !important; color: white; border-color: #c0392b; 
+            opacity: 0.8;
+        }
+
+        /* 輪盤樣式 */
+        .wheel-wrap { position: relative; width: 260px; height: 260px; margin: 20px auto; }
+        .wheel-container {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 8px solid var(--black); box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.8, 0.25, 1);
+            position: relative;
+            background: conic-gradient(
+                #e74c3c 0deg 60deg, #f1c40f 60deg 120deg, #3498db 120deg 180deg, 
+                #e74c3c 180deg 240deg, #f1c40f 240deg 300deg, #3498db 300deg 360deg
+            );
+        }
+        .wheel-line {
+            position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background: rgba(0,0,0,0.2); transform: translateX(-50%);
+        }
+        .wheel-line.cross { transform: translateX(-50%) rotate(90deg); }
+        .wheel-line.diag1 { transform: translateX(-50%) rotate(60deg); }
+        .wheel-line.diag2 { transform: translateX(-50%) rotate(120deg); }
+
+        .wheel-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: var(--white); 
+            border: 5px solid var(--black); border-radius: 50%;
+            z-index: 5; display: flex; align-items: center; justify-content: center; 
+            font-size: 24px; font-weight: 900; color: var(--accent-red);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+        .pointer {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; z-index: 10;
+            border-left: 20px solid transparent; border-right: 20px solid transparent;
+            border-top: 40px solid var(--black);
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.3));
+        }
+
+        /* 證書樣式 */
+        .cert-card {
+            position: relative; width: 100%; padding-top: 70%; 
+            border: 8px double var(--black); border-radius: 5px; 
+            margin-top: 20px; box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+            background-color: #fffdf0;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .cert-content {
+            position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .cert-border-inner {
+            position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px solid #c0392b; border-radius: 2px; pointer-events: none;
+        }
+        .cert-title { 
+            font-size: 1.8rem; font-weight: 900; color: #c0392b; 
+            border-bottom: 4px solid #c0392b; margin-bottom: 15px; padding-bottom: 5px;
+            letter-spacing: 3px;
+        }
+        .cert-text { font-size: 1.1rem; margin: 5px 0; font-weight: bold; color: #555; }
+        .cert-name { 
+            color: #2c3e50; font-size: 2rem; margin: 10px 0; font-weight: 900; 
+            font-family: "標楷體", "KaiTi", serif; border-bottom: 2px dashed #999; padding: 0 10px;
+        }
+        .cert-prize { 
+            color: #d35400; font-size: 1.5rem; margin: 15px 0; font-weight: 900; 
+            background: #ffeaa7; padding: 5px 15px; border-radius: 5px; 
+            transform: rotate(-2deg); box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        .cert-stamp {
+            position: absolute; bottom: 20px; right: 20px;
+            width: 90px; height: 90px; border: 5px solid #c0392b; border-radius: 50%;
+            color: #c0392b; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-weight: 900; transform: rotate(-20deg); font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.2);
+            font-family: "標楷體", "KaiTi", serif;
+        }
+        .cert-stamp span { font-size: 0.8rem; display: block; margin-top: 2px;}
+
+        .input-control {
+            width: 100%; padding: 15px; border: 4px solid var(--black); border-radius: 10px;
+            font-size: 1.2rem; box-sizing: border-box; text-align: center; margin-bottom: 15px;
+            font-weight: bold; background: #fff;
+        }
+        .input-control:focus { outline: none; background: #fdfefe; border-color: var(--primary-yellow); }
+
+        .footer-text {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px dashed #eee;
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--accent-red);
+            text-shadow: 1px 1px 0px var(--primary-yellow);
+            letter-spacing: 1px;
+        }
+
+        .hidden { display: none !important; }
+        .shake { animation: shake 0.5s; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        #confetti-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="game-container" id="game-card">
+        
+        <div id="screen-welcome">
+            <div class="poster-area">
+                <img src="delivery.jpg" alt="破壞之王海報" onerror="this.src='https://placehold.co/600x400/2c3e50/ffffff?text=Missing+delivery.jpg';">
+            </div>
+            <h1>破壞之王<br>知識大挑戰</h1>
+            
+            <p>「想學古拳法？先過我這關！」</p>
+            <p style="font-size: 0.9rem; color:#7f8c8d; background:#ecf0f1; display:inline-block; padding:5px 10px; border-radius:20px;">
+                需答對 <span style="color:#c0392b;">8</span> 題以上才能獲得證書
+            </p>
+
+            <button id="btn-follow-ig" class="btn btn-ig" onclick="followIG()">
+                👉 Step 1：先追蹤 IG 取得資格
+            </button>
+            
+            <button id="btn-start-game" class="btn hidden" onclick="startGame()">
+                🔥 Step 2：開始特訓
+            </button>
+        </div>
+
+        <div id="screen-game" class="hidden">
+            <div class="progress-container">
+                <span>START</span>
+                <div class="progress-bar"><div id="q-progress" class="progress-fill"></div></div>
+                <span>GOAL</span>
+            </div>
+            <div style="text-align:right; font-size:0.8rem; color:#95a5a6; margin-bottom:5px;">
+                Question <span id="q-current" style="color:#000; font-size:1.2rem;">1</span> / 10
+            </div>
+            <div class="question-box" id="q-text">題目載入中...</div>
+            <div id="options-box"></div>
+        </div>
+
+        <div id="screen-fail" class="hidden">
+            <div style="font-size:5rem; margin-bottom:10px;">🗑️</div>
+            <h2 style="color:#c0392b; font-size:2rem; margin:0;">挑戰失敗</h2>
+            <p>你只答對了 <span id="fail-score" style="font-weight:900; font-size:1.8rem;">0</span> 題。</p>
+            <div style="background:#f0f0f0; padding:15px; border-radius:10px; margin:20px 0; border-left:5px solid #7f8c8d;">
+                <p style="margin:0; font-style:italic;">「大師兄說得對，在座的各位...」</p>
+            </div>
+            <button class="btn" style="background:#7f8c8d; border-color:#555;" onclick="location.reload()">🔄 回去重練</button>
+        </div>
+
+        <div id="screen-wheel" class="hidden">
+            <h2 style="color:#27ae60; margin:0;">🎉 恭喜通過特訓！</h2>
+            <p>你答對了 <span id="pass-score" style="font-weight:900; font-size:1.5rem; color:#d35400;"></span> 題！</p>
+            <p>正在製作證書...</p>
+            
+            <div class="wheel-wrap">
+                <div class="pointer"></div>
+                <div id="wheel" class="wheel-container">
+                    <div class="wheel-line"></div>
+                    <div class="wheel-line cross"></div>
+                    <div class="wheel-line diag1"></div>
+                    <div class="wheel-line diag2"></div>
+                </div>
+                <div class="wheel-center">獎</div>
+            </div>
+            
+            <button id="spin-btn" class="btn" style="background:#2c3e50;" onclick="spinWheel()">👊 啟動無敵風火輪</button>
+        </div>
+
+        <div id="screen-input" class="hidden">
+            <h2>✍️ 留下大名</h2>
+            <p>請輸入你想印在證書上的稱號<br><span style="font-size:0.9rem; color:#7f8c8d;">(例如：蒙面加菲貓)</span></p>
+            <input type="text" id="user-name" class="input-control" placeholder="請輸入名字..." maxlength="10">
+            <button class="btn" onclick="generateCertificate()">✅ 確認製作證書</button>
+        </div>
+
+        <div id="screen-cert" class="hidden">
+            <h2 style="margin:5px 0;">📸 請截圖分享</h2>
+            
+            <div class="cert-card">
+                <div class="cert-border-inner"></div>
+                <div class="cert-content">
+                    <div class="cert-title">📜 古拳法結業證書</div>
+                    <div class="cert-text">茲證明弟子</div>
+                    <div class="cert-name" id="cert-name"></div>
+                    <div class="cert-text">通過地獄式特訓，特此頒發</div>
+                    <div class="cert-prize">榮獲：古拳法傳人</div>
+                    <div class="cert-text" style="font-size:0.8rem; margin-top:auto; color:#7f8c8d; width:100%; text-align:right;">
+                        發證日期：<span id="cert-date"></span>
+                    </div>
+                    <div class="cert-stamp">古拳法<br><span>合格</span></div>
+                </div>
+            </div>
+
+            <a href="https://www.facebook.com/djkinple" target="_blank" class="btn" style="background:#3b5998; margin-top:20px;">
+                💬 前往 FB 留言
+            </a>
+            
+            <a href="https://www.instagram.com/kinpletw/" target="_blank" class="btn btn-ig" style="margin-top:10px;">
+                📸 前往 IG 分享/私訊
+            </a>
+
+            <button class="btn" style="background:#95a5a6; margin-top:10px; font-size:1rem; padding:10px;" onclick="location.reload()">🏠 回首頁</button>
+        </div>
+
+        <div class="footer-text">
+            👉 《#破壞之王》 𝟏𝟐.𝟐𝟔 中文版 重溫經典 👈
+        </div>
+
+    </div>
+
+    <script>
+        // 設定
+        const TOTAL_QUESTIONS_TO_ASK = 10;
+        const PASS_THRESHOLD = 8;
+        
+        // 題庫 (無變動)
+        const pool = [
+            { q: "《破壞之王》中，主角何金銀的外號是什麼？", options: ["外賣仔", "送信仔", "賣魚仔", "掃地僧"], ans: "外賣仔" },
+            { q: "斷水流大師兄最經典的台詞是？", options: ["在座的各位都是垃圾", "我要打十個", "還原靚靚拳", "我也讀過兩年書"], ans: "在座的各位都是垃圾" },
+            { q: "何金銀為了打敗大師兄，學了什麼絕招？", options: ["無敵風火輪", "如來神掌", "天殘腳", "還我漂漂拳"], ans: "無敵風火輪" },
+            { q: "魔鬼筋肉人（達叔）開的雜貨店叫什麼名字？", options: ["懦夫救星", "精英中心", "強者世界", "有功練雜貨"], ans: "懦夫救星" },
+            { q: "何金銀蒙面行俠仗義時，戴的是什麼面具？", options: ["加菲貓", "蜘蛛人", "蝙蝠俠", "鹹蛋超人"], ans: "加菲貓" },
+            { q: "女主角阿麗最喜歡的歌星是誰？", options: ["張學友", "劉德華", "黎明", "郭富城"], ans: "張學友" },
+            { q: "大師兄是屬於哪個門派的？", options: ["空手道", "柔道", "劍道", "跆拳道"], ans: "空手道" },
+            { q: "何金銀送外賣的餐廳名字叫？", options: ["榮記冰室", "喜劇之王", "食神餐廳", "龍門客棧"], ans: "榮記冰室" },
+            { q: "魔鬼筋肉人自稱認識哪位武術宗師？", options: ["李小龍", "葉問", "霍元甲", "黃飛鴻"], ans: "李小龍" },
+            { q: "黑熊主將是用什麼招式攻擊何金銀的？", options: ["排山倒海", "奪命剪刀腳", "昇龍拳", "波動拳"], ans: "排山倒海" },
+            { q: "何金銀用哪一招鎖住了大師兄？", options: ["金蛇纏沾手", "十字固", "裸絞", "鎖喉功"], ans: "金蛇纏沾手" },
+            { q: "達叔說他被稱為「魔鬼筋肉人」是因為？", options: ["肌肉太發達", "長得像魔鬼", "心地善良", "以前是健美先生"], ans: "肌肉太發達" },
+            { q: "何金銀第一次和大師兄對決是在哪裡？", options: ["停車場", "擂台", "教室", "樓梯間"], ans: "停車場" },
+            { q: "電影中出現的裁判是誰飾演的？", options: ["鄭祖", "黃一山", "谷德昭", "李力持"], ans: "鄭祖" },
+            { q: "何金銀用了什麼戰術拖延大師兄？", options: ["心理戰術", "裝死", "一直跑", "投降"], ans: "心理戰術" },
+            { q: "這部電影的導演是誰？", options: ["李力持", "王家衛", "杜琪峰", "徐克"], ans: "李力持" },
+            { q: "「放開個女仔！」這句話是誰說的？", options: ["蒙面加菲貓", "警察", "黑熊", "阿麗"], ans: "蒙面加菲貓" },
+            { q: "榮記冰室的老闆，真實身份是？", options: ["反清復明義士", "少林高僧", "退役殺手", "特級廚師"], ans: "反清復明義士" },
+            { q: "達叔教何金銀練鐵砂掌，是用什麼炒？", options: ["糖炒栗子", "紅豆", "沙子", "鐵砂"], ans: "糖炒栗子" },
+            { q: "大師兄說阿麗喜歡的張學友是？", options: ["食屎啦", "歌神", "普通人", "帥哥"], ans: "食屎啦" },
+            { q: "最後抽獎箱裡的獎品是什麼？", options: ["根本沒有獎品", "賓士車", "環遊世界", "一棟房子"], ans: "根本沒有獎品" },
+            { q: "何金銀花光積蓄跟達叔學功夫，總共花了多少錢？", options: ["幾萬塊", "幾百塊", "幾十萬", "免費"], ans: "幾萬塊" },
+            { q: "黑熊主將是哪個部門的主將？", options: ["柔道部", "劍道部", "西洋拳部", "跆拳道部"], ans: "柔道部" },
+            { q: "阿麗送給何金銀什麼定情信物？", options: ["手錶", "幸運手環", "圍巾", "親吻"], ans: "手錶" },
+            { q: "達叔說要練成無敵風火輪，必須利用什麼？", options: ["地心引力", "強大內力", "風力", "電力"], ans: "地心引力" },
+            { q: "電影中，誰客串演出送票給何金銀？", options: ["張學友", "劉德華", "黎明", "郭富城"], ans: "張學友" },
+            { q: "何金銀為了向阿麗證明自己，去挑戰了誰？", options: ["黑熊", "校長", "達叔", "送報生"], ans: "黑熊" },
+            { q: "達叔的雜貨店門口掛著什麼字？", options: ["懦夫救星", "濟世為懷", "妙手回春", "有教無類"], ans: "懦夫救星" },
+            { q: "何金銀最後用什麼招式打敗大師兄？", options: ["無敵風火輪", "十字固", "鎖喉", "大幸運"], ans: "無敵風火輪" },
+            { q: "這部電影上映於哪一年？", options: ["1994", "1990", "1998", "2000"], ans: "1994" }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let currentQuestions = [];
+
+        function followIG() {
+            window.open('https://www.instagram.com/kinpletw/', '_blank');
+            const followBtn = document.getElementById('btn-follow-ig');
+            const startBtn = document.getElementById('btn-start-game');
+            followBtn.innerHTML = "✅ 驗證成功！";
+            followBtn.disabled = true;
+            followBtn.style.background = "#2ecc71"; 
+            setTimeout(() => {
+                followBtn.classList.add('hidden');
+                startBtn.classList.remove('hidden');
+            }, 1000);
+        }
+
+        function fireConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const colors = ['#f1c40f', '#e74c3c', '#3498db', '#ffffff'];
+
+            for (let i = 0; i < 150; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 5 + 2,
+                    angle: Math.random() * 360
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                pieces.forEach(p => {
+                    p.y += p.speed;
+                    p.angle += 2;
+                    if (p.y < canvas.height) {
+                        active = true;
+                        ctx.fillStyle = p.color;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.angle * Math.PI / 180);
+                        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                        ctx.restore();
+                    }
+                });
+                if (active) requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            score = 0;
+            currentQIndex = 0;
+            currentQuestions = shuffle([...pool]).slice(0, TOTAL_QUESTIONS_TO_ASK).map(item => {
+                let opts = shuffle([...item.options]);
+                return { q: item.q, options: opts, correctIndex: opts.indexOf(item.ans) };
+            });
+
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQIndex >= TOTAL_QUESTIONS_TO_ASK) {
+                endGame();
+                return;
+            }
+
+            const qData = currentQuestions[currentQIndex];
+            document.getElementById('q-current').innerText = currentQIndex + 1;
+            document.getElementById('q-progress').style.width = `${((currentQIndex)/TOTAL_QUESTIONS_TO_ASK)*100}%`;
+            document.getElementById('q-text').innerText = qData.q;
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, qData.correctIndex, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            const allBtns = document.querySelectorAll('.btn-option');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score++;
+            } else {
+                btn.classList.add('wrong');
+                allBtns[correct].classList.add('correct');
+                document.getElementById('game-card').classList.add('shake');
+                setTimeout(() => document.getElementById('game-card').classList.remove('shake'), 500);
+            }
+
+            setTimeout(() => {
+                currentQIndex++;
+                loadQuestion();
+            }, 1000);
+        }
+
+        function endGame() {
+            document.getElementById('screen-game').classList.add('hidden');
+            
+            if (score >= PASS_THRESHOLD) {
+                fireConfetti();
+                document.getElementById('pass-score').innerText = score;
+                document.getElementById('screen-wheel').classList.remove('hidden');
+            } else {
+                document.getElementById('fail-score').innerText = score;
+                document.getElementById('screen-fail').classList.remove('hidden');
+            }
+        }
+
+        function spinWheel() {
+            const btn = document.getElementById('spin-btn');
+            if(btn.disabled) return;
+            btn.disabled = true; btn.innerText = "🌪️ 無敵風火輪啟動...";
+
+            const wheel = document.getElementById('wheel');
+            // 讓它轉久一點，增加期待感
+            const randomDeg = Math.floor(Math.random() * 360) + 2500;
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+            // 4秒後直接跳轉到輸入名字
+            setTimeout(() => {
+                showInput();
+            }, 4000);
+        }
+
+        function showInput() {
+            document.getElementById('screen-wheel').classList.add('hidden');
+            document.getElementById('screen-input').classList.remove('hidden');
+        }
+
+        function generateCertificate() {
+            const name = document.getElementById('user-name').value;
+            if(!name) { 
+                alert("大俠，請留下您的大名！"); 
+                document.getElementById('user-name').focus();
+                return; 
+            }
+
+            document.getElementById('cert-name').innerText = name;
+            
+            const today = new Date();
+            document.getElementById('cert-date').innerText = `${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()}`;
+
+            document.getElementById('screen-input').classList.add('hidden');
+            document.getElementById('screen-cert').classList.remove('hidden');
+            fireConfetti(); // 再次慶祝
+        }
+    </script>
+</body>
+</html>
